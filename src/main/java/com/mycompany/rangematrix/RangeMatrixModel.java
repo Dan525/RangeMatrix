@@ -6,6 +6,7 @@
 package com.mycompany.rangematrix;
 
 import java.util.List;
+import javax.swing.event.TreeModelListener;
 
 /**
  *
@@ -13,23 +14,27 @@ import java.util.List;
  */
 public interface RangeMatrixModel {
     
+    public Object getRoot();
+    
     //Column group
     
-    int getColumnGroupCount();
+    int getColumnGroupCount(Object parent);
     
-    Object getColumnGroup(int index);
+    Object getColumnGroup(Object parent, int index);
+    
+    int getColumnIndex(Object parent, Object child);
     
     boolean isColumnGroup(Object column);
     
-    String getColumnGroupName(int index);
+    String getColumnGroupName(Object column);
     
     //Column
     
     int getColumnCount(Object columnGroup);
     
-    Object getColumn(int index);
+    Object getColumn(Object columnGroup,int index);
     
-    String getColumnName(int index);
+    String getColumnName(Object columnGroup,int index);
     
     List<Object> getColumnPath(Object column);
     

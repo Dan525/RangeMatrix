@@ -16,11 +16,11 @@ public class TableApp extends JFrame {
     
     public TableApp() {
         super("Таблица");
-        MultilevelTable t = new MultilevelTable();
+        MultilevelTable t = new MultilevelTable(new Model());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.add(t);
-        this.setSize(new Dimension(800,500));
+        this.setSize(new Dimension(1000,600));
     }
     
 }
