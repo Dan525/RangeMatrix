@@ -14,14 +14,20 @@ import java.util.List;
  */
 public class Model implements RangeMatrixModel {
 
-    File root;
+    File columnRoot;
+    File rowRoot;
     
     Model() {
-        this.root = new File("C:\\Источники сигнала");
+        this.columnRoot = new File("C:\\Источники сигнала");
+        this.rowRoot = new File("C:\\Источники сигнала");
     }
     
-    public Object getRoot() {
-        return root;
+    public Object getColumnRoot() {
+        return columnRoot;
+    }
+    
+    public Object getRowRoot() {
+        return rowRoot;
     }
     
     @Override

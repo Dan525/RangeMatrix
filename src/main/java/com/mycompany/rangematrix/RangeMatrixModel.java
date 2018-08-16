@@ -14,7 +14,7 @@ import javax.swing.event.TreeModelListener;
  */
 public interface RangeMatrixModel {
     
-    public Object getRoot();
+    
     
     //Column group
     
