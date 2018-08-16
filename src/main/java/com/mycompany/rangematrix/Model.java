@@ -54,7 +54,7 @@ public class Model implements RangeMatrixModel {
     
     @Override
     public boolean isColumnGroup(Object column) {
-        if (((File)column).list() == null) {
+        if (((File)column).list().length == 0) {
             return false;
         } else {
             return true;
