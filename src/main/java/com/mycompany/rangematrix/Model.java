@@ -19,7 +19,7 @@ public class Model implements RangeMatrixModel {
     
     Model() {
         this.columnRoot = new File("C:\\Источники сигнала");
-        this.rowRoot = new File("C:\\Источники сигнала");
+        this.rowRoot = new File("C:\\Источники сигнала\\Плата 1");
     }
     
     public Object getColumnRoot() {
@@ -96,23 +96,30 @@ public class Model implements RangeMatrixModel {
     }
 
     @Override
-    public int getRowGroupCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getRowGroupCount(Object row) {
+        if (row == null) {
+            return 0;
+        }
+        return ((File)row).list().length;
     }
 
     @Override
-    public Object getRowGroup(int index) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object getRowGroup(Object row, int index) {
+        return ((File)row).listFiles()[index];
     }
 
     @Override
     public boolean isRowGroup(Object row) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (((File)row).list().length == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override
-    public String getRowGroupName(int index) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getRowGroupName(Object row) {
+        return ((File)row).getName();
     }
 
     @Override
@@ -136,8 +143,8 @@ public class Model implements RangeMatrixModel {
     }
 
     @Override
-    public Object getValueAt(List<Object> rowPath, List<Object> columnPath) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object getValueAt(int row, int col) {
+        return 1;
     }
 
     

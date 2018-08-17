@@ -40,13 +40,13 @@ public interface RangeMatrixModel {
     
     //Row Group
     
-    int getRowGroupCount();
+    int getRowGroupCount(Object row);
     
-    Object getRowGroup(int index);
+    Object getRowGroup(Object row, int index);
     
     boolean isRowGroup(Object row);
     
-    String getRowGroupName(int index);
+    String getRowGroupName(Object row);
     
     //Row
     
@@ -60,5 +60,5 @@ public interface RangeMatrixModel {
     
     //Values
     
-    Object getValueAt(List<Object> rowPath, List<Object> columnPath);
+    Object getValueAt(int row, int col);
 }

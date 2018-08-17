@@ -11,6 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -60,9 +62,17 @@ public class MultilevelTable extends JComponent {
 //    int cellY;
     
     
+    int rc;
     int rowCounter = 0;
     float lowestPointHeader = 0;
     int columnCounter = 0;
+    float sidePanelWidth = 200;
+    
+    ArrayList<Float> cellXList = new ArrayList<>();
+    ArrayList<Float> cellYList = new ArrayList<>();
+    ArrayList<Float> cellWidthList = new ArrayList<>();
+    ArrayList<Float> cellHeightList = new ArrayList<>();
+    
     
     public float setLowestPoint(float y, float cellHeight) {
         if (y > lowestPointHeader) {
@@ -82,11 +92,29 @@ public class MultilevelTable extends JComponent {
         return null;
     }
     
-    public void drawColumns(Object parent, FontMetrics fm, Graphics2D g2d, float parentCellX, float parentCellWidth, float cellHeight) {
-        int columnCount = model.getColumnGroupCount(parent);        
+    ArrayList<Integer> maxes = new ArrayList<>();
+    int maxLevel = 0;
+    int newMaxLevel;
+    
+    public void getMaxLevel(Object parentColumn) {
+        int columnCount = model.getColumnGroupCount(parentColumn);
+        maxLevel++;
+        for (int i = 0; i < columnCount; i++) {
+            
+            Object child = model.getColumnGroup(parentColumn, i);
+            boolean isGroup = model.isColumnGroup(child);            
+            if (isGroup) {
+                getMaxLevel(child);
+            }            
+        }
+        maxes.add(maxLevel);
+    }
+    
+    public void drawColumns(Object parentColumn, FontMetrics fm, Graphics2D g2d, float parentCellX, float parentCellWidth, float cellHeight) {
+        int columnCount = model.getColumnGroupCount(parentColumn);        
         
         for (int i = 0; i < columnCount; i++) {
-            Object child = model.getColumnGroup(parent, i);
+            Object child = model.getColumnGroup(parentColumn, i);
             String columnName = model.getColumnGroupName(child);
             
             float cellWidth = parentCellWidth / columnCount;
@@ -106,19 +134,67 @@ public class MultilevelTable extends JComponent {
                 drawColumns(child, fm, g2d, cellX, cellWidth, cellHeight);
                 rowCounter--;
             } else {
-                for (int k = 0; k < model.getRowCount(); k++) {
-                    Rectangle2D rectRow = new Rectangle2D.Float(cellX, lowestPointHeader + k*cellHeight, cellWidth, cellHeight);
-                    g2d.draw(rectRow);
-                }
+//                g2d.drawLine((int)cellX, (int)lowestPointHeader, (int)cellX, getHeight());
+//                cellXList.add(cellX);
+//                cellWidthList.add(cellWidth);
             }
         }
     }
     
-    public void drawCell(FontMetrics fm, Graphics2D g2d) {
-        int rowCount = model.getRowGroupCount();
+    public void getRowsAbsoluteCount(Object parentRow) {
+        int rowCount = model.getRowGroupCount(parentRow);        
         
+        for (int i = 0; i < rowCount; i++) {
+            Object child = model.getRowGroup(parentRow, i);
+            
+            boolean isGroup = model.isRowGroup(child);            
+            if (isGroup) {
+                getRowsAbsoluteCount(child);
+            } else {
+                rc += rowCount;
+            }
+        }
+    }
+    
+    public void drawRows(Object parentRow, FontMetrics fm, Graphics2D g2d, float parentCellY, float parentCellHeight, float cellWidth) {
         
+        int rowCount = model.getRowGroupCount(parentRow);        
         
+        for (int i = 0; i < rowCount; i++) {
+            Object child = model.getRowGroup(parentRow, i);
+            String rowName = model.getRowGroupName(child);
+            
+            
+            float cellHeight = parentCellHeight / (rowCount);
+            float cellX = columnCounter * cellWidth;
+            float cellY = parentCellY + i * cellHeight;
+            
+            Rectangle2D rect = new Rectangle2D.Float(cellX, cellY, cellWidth, cellHeight);
+            g2d.draw(rect);
+            g2d.drawString(rowName, cellX + cellWidth/2 - fm.stringWidth(rowName)/2, cellY + 15);
+            
+            boolean isGroup = model.isRowGroup(child);            
+            if (isGroup) {
+                columnCounter++;
+                drawRows(child, fm, g2d, cellY, cellHeight, cellWidth);
+                columnCounter--;
+            } else {
+                g2d.drawLine((int)sidePanelWidth, (int)cellY, getWidth(), (int)cellY);
+                cellYList.add(cellY);
+                cellHeightList.add(cellHeight);
+            }
+        }
+    }
+    
+    public void drawValues(FontMetrics fm, Graphics2D g2d){
+        
+        for (int i = 0; i < cellYList.size(); i++) {
+            for (int j = 0; j < cellXList.size(); j++) {
+                String value = (model.getValueAt(j, i)).toString();
+                g2d.drawString(value, cellXList.get(j) + cellWidthList.get(j)/2 - fm.stringWidth(value)/2, cellYList.get(i) + 15);
+            }            
+        }
+        repaint();
     }
 
     @Override
@@ -126,12 +202,21 @@ public class MultilevelTable extends JComponent {
         Graphics2D g2d = (Graphics2D) g;
         FontMetrics fm = g2d.getFontMetrics();
 
-        Object parent = ((Model)model).getColumnRoot();
-        float parentCellWidth = getWidth() - 200;
+        Object parentColumn = ((Model)model).getColumnRoot();
+        float parentCellWidth = getWidth();
         float cellHeight = fm.getHeight() + 6;
         
-        drawColumns(parent, fm, g2d, 200, parentCellWidth, cellHeight);
-        System.out.println(getCell(3,2).getX());
+        drawColumns(parentColumn, fm, g2d, 0, parentCellWidth, cellHeight);
+        getMaxLevel(parentColumn);
+        System.out.println(maxLevel);
+//        Object parentRow = ((Model)model).getRowRoot();
+//        float parentCellHeight = getHeight() - lowestPointHeader;
+//        float cellWidth = 100;
+//        
+//        
+//        drawRows(parentRow, fm, g2d, lowestPointHeader, parentCellHeight, cellWidth);
+//        
+//        drawValues(fm, g2d);
         
     }
 }
