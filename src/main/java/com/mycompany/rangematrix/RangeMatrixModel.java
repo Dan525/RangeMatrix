@@ -50,7 +50,7 @@ public interface RangeMatrixModel {
     
     //Row
     
-    int getRowCount(Object rowGroup);    
+    int getRowCount();    
     
     Object getRow(int index);    
     
